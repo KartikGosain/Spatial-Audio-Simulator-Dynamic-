@@ -26,6 +26,9 @@ def simulate_static_environment_numpy(config):
 
     print("Starting purely NumPy-based static simulation with Source Clouds...")
 
+    # Storage for RIRs for reporting [Source x Mic x Samples]
+    all_rirs = []
+
     for spk_idx, spk in enumerate(config['speakers']):
         centroid = spk['start_pos']
         
@@ -33,32 +36,26 @@ def simulate_static_environment_numpy(config):
         if 'cloud' in spk:
             cloud_config = spk['cloud']
         else:
-            # If radius or num_points are provided directly, create a default gaussian cloud
             num_pts = spk.get('num_points', 1)
             rad = spk.get('radius', 0.0)
             if num_pts > 1 or rad > 0:
-                cloud_config = {
-                    'type': 'gaussian_sphere',
-                    'num_points': num_pts,
-                    'radius': rad
-                }
+                cloud_config = {'type': 'gaussian_sphere', 'num_points': num_pts, 'radius': rad}
             else:
                 cloud_config = {'type': 'point', 'num_points': 1}
         
-        # Generate points in the cloud
         cloud_points = generate_source_cloud(centroid, cloud_config)
         num_points = len(cloud_points)
         
         print(f"Processing Speaker {spk_idx+1} ({cloud_config['type']} cloud with {num_points} points)...")
         
         signal = spk['full_signal']
+        spk_rirs = []
         
         for mic_idx, mic_pos in enumerate(config['mic_positions']):
-            # Aggregate RIR for the entire cloud
             combined_rir = None
             
             for p_idx, pos in enumerate(cloud_points):
-                # Calculate aiming vector for this specific point
+                # Calculate aiming vector
                 if spk['target_mic']:
                     aim_azim, aim_colat = calculate_aiming_vector(pos, center_mic)
                 else:
@@ -72,35 +69,30 @@ def simulate_static_environment_numpy(config):
                            math.sin(elev_rad)]
                 
                 rir = compute_rir_numpy(
-                    room_dim=room_dim,
-                    src_pos=pos,
-                    mic_pos=mic_pos,
-                    absorption_coeffs=absorption,
-                    max_order=max_order,
-                    fs=fs,
-                    c=343.0,
-                    aim_vec=aim_vec,
-                    use_frac=config.get('use_fractional_delay', True),
+                    room_dim=room_dim, src_pos=pos, mic_pos=mic_pos, 
+                    absorption_coeffs=absorption, max_order=max_order, fs=fs,
+                    aim_vec=aim_vec, use_frac=config.get('use_fractional_delay', True),
                     use_air=config.get('use_air_absorption', True)
                 )
                 
                 if combined_rir is None:
                     combined_rir = rir
                 else:
-                    # Pad if lengths differ (unlikely in static, but safe)
                     if len(rir) > len(combined_rir):
                         combined_rir = np.pad(combined_rir, (0, len(rir)-len(combined_rir)))
                     elif len(combined_rir) > len(rir):
                         rir = np.pad(rir, (0, len(combined_rir)-len(rir)))
                     combined_rir += rir
             
-            # Normalize the combined RIR by the number of points to maintain energy balance
             combined_rir /= num_points
+            spk_rirs.append(combined_rir)
             
             print(f"Convolving cloud RIR for Speaker {spk_idx+1} to Mic {mic_idx+1}...")
             convolved = scipy.signal.fftconvolve(signal, combined_rir)
             
             overlap_length = min(len(convolved), output_signals.shape[1])
             output_signals[mic_idx, :overlap_length] += convolved[:overlap_length]
+        
+        all_rirs.append(spk_rirs)
 
-    return output_signals
+    return output_signals, all_rirs

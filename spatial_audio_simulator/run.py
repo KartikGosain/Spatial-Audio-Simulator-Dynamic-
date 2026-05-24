@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 import numpy as np
+from datetime import datetime
 
 # Add the project root to the path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -10,6 +11,7 @@ from sas.config.manager import ConfigManager
 from sas.audio.io import load_custom_audio, export_audio
 from sas.audio.processing import pad_tracks
 from sas.simulation.engine_static import simulate_static_environment_numpy
+from sas.utils.reporting import generate_simulation_report
 
 def run_simulation(config_path, mode='static'):
     # 1. Load Configuration
@@ -17,8 +19,12 @@ def run_simulation(config_path, mode='static'):
     config = manager.get_engine_config()
     
     input_dir = "data/inputs"
-    output_dir = config['output_dir']
-    os.makedirs(output_dir, exist_ok=True)
+    
+    # Create a unique timestamped folder for this run
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_base_dir = config.get('output_dir', 'data/outputs')
+    run_dir = os.path.join(output_base_dir, f"run_{timestamp}")
+    os.makedirs(run_dir, exist_ok=True)
     
     fs = config['fs']
     
@@ -56,18 +62,22 @@ def run_simulation(config_path, mode='static'):
     
     # 5. Execute
     if mode == 'static':
-        output_signals = simulate_static_environment_numpy(config)
+        output_signals, all_rirs = simulate_static_environment_numpy(config)
     else:
-        # Placeholder for dynamic engine which we'll implement later
+        # Placeholder for dynamic engine
         print(f"Mode '{mode}' not yet implemented. Falling back to static.")
-        output_signals = simulate_static_environment_numpy(config)
+        output_signals, all_rirs = simulate_static_environment_numpy(config)
         
-    # 6. Export
+    # 6. Export Audio
     for i, signal in enumerate(output_signals):
-        out_path = os.path.join(output_dir, f"mic_{i+1}.wav")
+        out_path = os.path.join(run_dir, f"mic_{i+1}.wav")
         export_audio(out_path, fs, signal)
     
-    print(f"\nSimulation complete. Outputs saved to {output_dir}")
+    # 7. Generate Research Reports and Raw Data Artifacts
+    print("Generating research reports...")
+    generate_simulation_report(config, all_rirs, run_dir)
+    
+    print(f"\nSimulation complete. All artifacts saved to {run_dir}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Spatial Audio Simulator CLI")
