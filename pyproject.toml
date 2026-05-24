@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spatial-audio-simulator"
+version = "0.5.0"
+authors = [
+  { name="Senpai-sama06", email="senrk2005@gmail.com" },
+]
+description = "A high-fidelity spatial audio simulation platform for 3D acoustic environments."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Multimedia :: Sound/Audio :: Analysis",
+]
+dependencies = [
+    "numpy",
+    "pyroomacoustics",
+    "scipy",
+    "PyYAML",
+    "matplotlib",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Senpai-sama06/Spatial-Audio-Simulator-Dynamic-"
+"Bug Tracker" = "https://github.com/Senpai-sama06/Spatial-Audio-Simulator-Dynamic-/issues"
+
+[project.scripts]
+sas-run = "spatial_audio_simulator.run:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["spatial_audio_simulator*"]

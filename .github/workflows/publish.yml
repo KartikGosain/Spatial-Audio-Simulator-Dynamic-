@@ -1,0 +1,50 @@
+name: Publish Python Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-n-publish:
+    name: Build and publish Python distribution to GitHub Packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine
+
+    - name: Build binary wheel and source tarball
+      run: python -m build
+
+    - name: Publish to GitHub Packages
+      env:
+        TWINE_USERNAME: ${{ github.actor }}
+        TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        TWINE_REPOSITORY_URL: https://maven.pkg.github.com/${{ github.repository }}
+      run: |
+        # Note: GitHub Packages for Python is currently in a slightly awkward state
+        # compared to NPM/Docker. Many users prefer just using GitHub Releases
+        # for Python artifacts unless they have a specific private registry need.
+        # We will attempt upload but prioritize the GitHub Release below.
+        twine upload --skip-existing --repository-url https://maven.pkg.github.com/${{ github.repository }} dist/* || echo "Direct upload failed, proceeding to Release"
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: dist/*
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
