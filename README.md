@@ -50,6 +50,7 @@ Acoustic and environmental parameters are managed within `config.py`.
 | `absorption` | Surface-specific absorption coefficients (North, South, East, West, Floor, Ceiling). |
 
 ## Core Engine Features
+*   **Volumetric Source Clouds:** Models sources as 3D distributions (Gaussian, Planar, Linear) rather than 0D points using `radius` and `num_points`.
 *   **Image Source Method:** Traces reflections up to the 15th order.
 *   **Sinc Interpolation:** Prevents spatial aliasing by allowing non-integer sample delays.
 *   **Vector Directivity:** Calculates unique departure vectors and Cardioid gains per microphone.

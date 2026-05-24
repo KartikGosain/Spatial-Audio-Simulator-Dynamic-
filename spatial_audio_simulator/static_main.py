@@ -73,7 +73,9 @@ def main():
         'speed': 0.0,
         'move_direction_deg': 0,
         'target_mic': True,
-        'custom_target_azim': 0, 'custom_target_elev': 0
+        'custom_target_azim': 0, 'custom_target_elev': 0,
+        'num_points': 10,
+        'radius': 0.2
     }
     
     spk2 = {
@@ -82,7 +84,14 @@ def main():
         'speed': 0.0,
         'move_direction_deg': 0,
         'target_mic': False,
-        'custom_target_azim': 180, 'custom_target_elev': 0
+        'custom_target_azim': 180, 'custom_target_elev': 0,
+        'cloud': {
+            'type': 'planar',
+            'num_points': 10,
+            'radius': 0.5,
+            'width': 1.0,
+            'height': 0.5
+        }
     }
 
     spk3 = {
@@ -91,7 +100,13 @@ def main():
         'speed': 0.0,
         'move_direction_deg': 0,
         'target_mic': True,
-        'custom_target_azim': 0, 'custom_target_elev': 0
+        'custom_target_azim': 0, 'custom_target_elev': 0,
+        'cloud': {
+            'type': 'linear',
+            'num_points': 5,
+            'radius': 0.3,
+            'length': 1.0
+        }
     }
     
     config['speakers'].extend([spk1, spk2, spk3])
