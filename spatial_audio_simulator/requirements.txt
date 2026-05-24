@@ -1,3 +1,5 @@
 numpy
 pyroomacoustics
 scipy
+PyYAML
+matplotlib

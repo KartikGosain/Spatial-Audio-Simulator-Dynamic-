@@ -1,0 +1,55 @@
+# Spatial Audio Simulator Configuration
+# All coordinates are in meters [x, y, z]
+
+# --- Room Environment ---
+room:
+  dimensions: [10.0, 10.0, 4.0]
+  is_closed: true
+  absorption:
+    north: 0.4
+    south: 0.4
+    east: 0.4
+    west: 0.4
+    floor: 0.2
+    ceiling: 0.8
+
+# --- Global Physics Flags ---
+physics:
+  sample_rate: 16000
+  speed_of_sound: 343.0
+  use_fractional_delay: true
+  use_air_absorption: true
+  max_reflection_order: 15
+  temp_celsius: 20.0
+  humidity_percent: 50.0
+
+# --- Recording Setup ---
+recording:
+  mic_positions:
+    - [4.9, 4.0, 1.5]
+    - [5.1, 4.0, 1.5]
+  output_directory: "data/outputs"
+
+# --- Sound Sources ---
+# Each source can be a point or a volumetric cloud
+sources:
+  - name: "speaker_1"
+    audio_file: "AUDsamM.wav"
+    start_pos_spherical: { dist: 2.0, azim: 45, elev: 0 }
+    reference_point: [5.0, 4.0, 1.5]
+    speed: 0.0
+    heading_deg: 0
+    target_mic: true
+    radius: 0.2
+    num_points: 10
+  
+  - name: "speaker_2"
+    audio_file: "AUDsamF.wav"
+    start_pos_spherical: { dist: 3.0, azim: -30, elev: 15 }
+    reference_point: [5.0, 4.0, 1.5]
+    speed: 0.0
+    heading_deg: 0
+    target_mic: false
+    custom_target: { azim: 180, elev: 0 }
+    radius: 0.5
+    num_points: 10

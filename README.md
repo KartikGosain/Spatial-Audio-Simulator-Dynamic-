@@ -1,60 +1,55 @@
 # Spatial Audio Simulator
 
-A modular platform for 3D acoustic environment simulation. This tool supports dynamic source movement, multi-channel microphone arrays, and customizable room acoustics. Version 0.2.0 introduces a native NumPy-based Image Source Method (ISM) engine for high-precision Room Impulse Response (RIR) generation.
+A modular platform for 3D acoustic environment simulation. This tool supports dynamic source movement, multi-channel microphone arrays, and customizable room acoustics.
 
 ## Installation
-Ensure Python 3.8+ is installed. Install dependencies via:
+Ensure Python 3.8+ is installed. Install dependencies:
 
 ```bash
 pip install -r spatial_audio_simulator/requirements.txt
 ```
 
-## Execution
-Input audio files (.wav) must be placed in `spatial_audio_simulator/data/inputs/`.
+## Quick Start
+1. Place input audio files (.wav) in `spatial_audio_simulator/data/inputs/`.
+2. Configure your environment in `spatial_audio_simulator/default_config.yaml`.
+3. Run the simulation:
 
-### Dynamic Simulation
-Processes moving speakers using block-wise time-variant convolution:
 ```bash
-python3 spatial_audio_simulator/main.py
+cd spatial_audio_simulator
+python3 run.py --config default_config.yaml --mode static
 ```
 
-### Static Simulation
-Processes static sources using a high-precision NumPy ISM engine:
-```bash
-python3 spatial_audio_simulator/static_main.py
-```
+## Configuration Guide (YAML)
+The simulator uses a YAML-based configuration for clarity and ease of use. Key sections include:
+
+### Room Environment
+*   `dimensions`: [Length, Width, Height] in meters.
+*   `absorption`: Dictionary of coefficients for each wall (0.0 to 1.0).
+
+### Physics Flags
+*   `sample_rate`: Global processing frequency (e.g., 16000).
+*   `use_fractional_delay`: Enables sub-sample precision (Sinc interpolation).
+*   **Source Clouds**: Define `radius` and `num_points` per speaker to simulate volumetric sources.
+
+### Sound Sources
+Each speaker entry supports:
+*   `start_pos_spherical`: Intuitive placement via {dist, azim, elev}.
+*   `target_mic`: Boolean to automatically aim the source at the microphone array.
+*   `radius`: Spatial spread of the source cloud.
 
 ## Directory Structure
 ```text
 spatial_audio_simulator/
-├── main.py                     # Dynamic simulation entry point
-├── static_main.py              # Static high-precision simulation entry point
-├── config.py                   # Global configuration and physics flags
+├── run.py                      # Unified CLI entry point
+├── default_config.yaml         # Central configuration template
 ├── data/
 │   ├── inputs/                 # Source audio files
 │   └── outputs/                # Simulation results
 └── sas/                        # Core simulator package
-    ├── audio/                  # Signal I/O and pre-processing
+    ├── config/                 # YAML parsing and configuration management
     ├── physics/                # Acoustic engine and kinematics
-    └── simulation/             # Execution logic
+    └── simulation/             # Execution engines
 ```
 
-## Configuration (config.py)
-Acoustic and environmental parameters are managed within `config.py`.
-
-| Parameter | Description |
-| :--- | :--- |
-| `is_closed` | Toggle between indoor (reverberant) and outdoor (anechoic) models. |
-| `use_fractional_delay` | Enables Sinc interpolation for sub-sample temporal accuracy. |
-| `use_air_absorption` | Implements distance-dependent high-frequency attenuation. |
-| `absorption` | Surface-specific absorption coefficients (North, South, East, West, Floor, Ceiling). |
-
-## Core Engine Features
-*   **Volumetric Source Clouds:** Models sources as 3D distributions (Gaussian, Planar, Linear) rather than 0D points using `radius` and `num_points`.
-*   **Image Source Method:** Traces reflections up to the 15th order.
-*   **Sinc Interpolation:** Prevents spatial aliasing by allowing non-integer sample delays.
-*   **Vector Directivity:** Calculates unique departure vectors and Cardioid gains per microphone.
-*   **Linear Kinematics:** Supports source trajectories with defined speed and heading.
-
 ## Output Handling
-The simulator generates discrete .wav files for each microphone (e.g., `final_mic_1.wav`). To experience spatial effects, pan these channels (e.g., Mic 1 Left, Mic 2 Right) in a DAW or audio player. Headphones are required for accurate spatial monitoring.
+The simulator generates discrete .wav files for each microphone (e.g., `mic_1.wav`). To experience spatial effects, pan these channels (e.g., Mic 1 Left, Mic 2 Right) in a DAW or audio player. Headphones are required for accurate spatial monitoring.
