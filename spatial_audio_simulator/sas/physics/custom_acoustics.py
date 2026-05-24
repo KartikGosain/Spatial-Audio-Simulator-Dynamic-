@@ -14,20 +14,22 @@ def get_air_absorption_factor(dist, fs, temp=20, hum=50):
     return np.exp(-alpha * dist)
 
 def sinc_interp(rir, sample_delay, amplitude):
-    """Applies Sinc fractional delay to the RIR."""
-    # We'll use a kernel of size 21 for the sinc window
-    kernel_size = 21
+    """Applies high-precision Sinc fractional delay to the RIR."""
+    kernel_size = 31
     half_kernel = kernel_size // 2
     
     int_delay = int(np.floor(sample_delay))
     frac_delay = sample_delay - int_delay
     
+    # Time vector centered at the fractional delay
     t = np.arange(-half_kernel, half_kernel + 1) - frac_delay
-    kernel = np.sinc(t) * np.hamming(kernel_size) # Windowed sinc
     
-    # Add to RIR
+    # Blackman window provides better side-lobe rejection than Hamming for acoustics
+    window = np.blackman(kernel_size)
+    kernel = np.sinc(t) * window
+    
     start_idx = int_delay - half_kernel
-    if start_idx >= 0 and start_idx + kernel_size < len(rir):
+    if start_idx >= 0 and start_idx + kernel_size <= len(rir):
         rir[start_idx : start_idx + kernel_size] += amplitude * kernel
 
 def compute_rir_numpy(room_dim, src_pos, mic_pos, absorption_coeffs, max_order, fs, 
@@ -50,7 +52,7 @@ def compute_rir_numpy(room_dim, src_pos, mic_pos, absorption_coeffs, max_order, 
     Rs1, Rs2 = np.sqrt(1 - abs_dict['south']), np.sqrt(1 - abs_dict['north'])
     Rf, Rc  = np.sqrt(1 - abs_dict['floor']), np.sqrt(1 - abs_dict['ceiling'])
     
-    max_dist = np.linalg.norm(room_dim) * (max_order + 1)
+    max_dist = np.linalg.norm(room_dim) * (max_order + 2)
     rir_len = int((max_dist / c) * fs) + 2000 
     rir = np.zeros(rir_len)
     
@@ -65,10 +67,6 @@ def compute_rir_numpy(room_dim, src_pos, mic_pos, absorption_coeffs, max_order, 
                 for qx in [0, 1]:
                     for qy in [0, 1]:
                         for qz in [0, 1]:
-                            # Reflection counts per wall type
-                            # This logic follows the standard Image Source method for shoeboxes
-                            ref_w1 = abs(nx) if nx <= 0 else abs(nx-qx) # simplified logic for wall count
-                            # Actually, a more precise count for each wall:
                             # x-axis walls
                             if nx < 0: count_w1, count_w2 = -nx, -nx+qx
                             elif nx > 0: count_w1, count_w2 = nx-qx, nx
@@ -122,4 +120,9 @@ def compute_rir_numpy(room_dim, src_pos, mic_pos, absorption_coeffs, max_order, 
                                 idx = int(round(delay_samples))
                                 if idx < rir_len: rir[idx] += amplitude
                                 
+    # Trim trailing zeros
+    nonzero = np.nonzero(rir)[0]
+    if len(nonzero) > 0:
+        rir = rir[:nonzero[-1] + 1]
+        
     return rir
