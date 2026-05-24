@@ -1,7 +1,7 @@
 import yaml
 import os
 import numpy as np
-from sas.utils.geometry import spherical_to_cartesian
+from spatial_audio_simulator.utils.geometry import spherical_to_cartesian
 
 class ConfigManager:
     def __init__(self, yaml_path=None):

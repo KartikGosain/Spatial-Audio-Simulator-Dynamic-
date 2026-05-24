@@ -2,7 +2,7 @@ import numpy as np
 import pyroomacoustics as pra
 import scipy.signal
 import math
-from sas.utils.geometry import calculate_aiming_vector
+from spatial_audio_simulator.utils.geometry import calculate_aiming_vector
 
 def simulate_dynamic_environment(config):
     """

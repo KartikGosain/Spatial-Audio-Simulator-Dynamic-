@@ -7,8 +7,8 @@ from scipy.fft import fft, fftfreq
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from sas.physics.custom_acoustics import compute_rir_numpy
-from sas.utils.clouds import generate_source_cloud
+from spatial_audio_simulator.physics.custom_acoustics import compute_rir_numpy
+from spatial_audio_simulator.utils.clouds import generate_source_cloud
 
 REPORT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reports")
 

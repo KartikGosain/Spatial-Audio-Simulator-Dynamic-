@@ -3,20 +3,19 @@
 A modular platform for 3D acoustic environment simulation. This tool supports dynamic source movement, multi-channel microphone arrays, and customizable room acoustics.
 
 ## Installation
-Ensure Python 3.8+ is installed. Install dependencies:
+Ensure Python 3.8+ is installed. You can now install the simulator as a local package:
 
 ```bash
-pip install -r spatial_audio_simulator/requirements.txt
+pip install -e .
 ```
 
 ## Quick Start
 1. Place input audio files (.wav) in `spatial_audio_simulator/data/inputs/`.
 2. Configure your environment in `spatial_audio_simulator/default_config.yaml`.
-3. Run the simulation:
+3. Run the simulation using the newly installed command:
 
 ```bash
-cd spatial_audio_simulator
-python3 run.py --config default_config.yaml --mode static
+sas-run --config spatial_audio_simulator/default_config.yaml --mode static
 ```
 
 ## Configuration Guide (YAML)

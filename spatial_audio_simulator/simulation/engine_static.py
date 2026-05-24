@@ -1,9 +1,9 @@
 import numpy as np
 import scipy.signal
 import math
-from sas.physics.custom_acoustics import compute_rir_numpy
-from sas.utils.geometry import calculate_aiming_vector, spherical_to_cartesian
-from sas.utils.clouds import generate_source_cloud
+from spatial_audio_simulator.physics.custom_acoustics import compute_rir_numpy
+from spatial_audio_simulator.utils.geometry import calculate_aiming_vector, spherical_to_cartesian
+from spatial_audio_simulator.utils.clouds import generate_source_cloud
 
 def simulate_static_environment_numpy(config):
     """

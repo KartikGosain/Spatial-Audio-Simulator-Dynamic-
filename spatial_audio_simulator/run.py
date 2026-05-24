@@ -7,11 +7,11 @@ from datetime import datetime
 # Add the project root to the path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from sas.config.manager import ConfigManager
-from sas.audio.io import load_custom_audio, export_audio
-from sas.audio.processing import pad_tracks
-from sas.simulation.engine_static import simulate_static_environment_numpy
-from sas.utils.reporting import generate_simulation_report
+from spatial_audio_simulator.config.manager import ConfigManager
+from spatial_audio_simulator.audio.io import load_custom_audio, export_audio
+from spatial_audio_simulator.audio.processing import pad_tracks
+from spatial_audio_simulator.simulation.engine_static import simulate_static_environment_numpy
+from spatial_audio_simulator.utils.reporting import generate_simulation_report
 
 def run_simulation(config_path, mode='static'):
     # 1. Load Configuration
@@ -79,7 +79,7 @@ def run_simulation(config_path, mode='static'):
     
     print(f"\nSimulation complete. All artifacts saved to {run_dir}")
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description="Spatial Audio Simulator CLI")
     parser.add_argument("--config", type=str, default="default_config.yaml", help="Path to YAML config")
     parser.add_argument("--mode", type=str, choices=['static', 'dynamic'], default='static', help="Simulation mode")
@@ -87,3 +87,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     run_simulation(args.config, args.mode)
+
+if __name__ == "__main__":
+    main()
