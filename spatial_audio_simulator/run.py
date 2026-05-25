@@ -11,6 +11,7 @@ from spatial_audio_simulator.config.manager import ConfigManager
 from spatial_audio_simulator.audio.io import load_custom_audio, export_audio
 from spatial_audio_simulator.audio.processing import pad_tracks
 from spatial_audio_simulator.simulation.engine_static import simulate_static_environment_numpy
+from spatial_audio_simulator.simulation.engine_dynamic import simulate_dynamic_environment_numpy
 from spatial_audio_simulator.utils.reporting import generate_simulation_report
 
 def run_simulation(config_path, mode='static'):
@@ -63,9 +64,10 @@ def run_simulation(config_path, mode='static'):
     # 5. Execute
     if mode == 'static':
         output_signals, all_rirs = simulate_static_environment_numpy(config)
+    elif mode == 'dynamic':
+        output_signals, all_rirs = simulate_dynamic_environment_numpy(config)
     else:
-        # Placeholder for dynamic engine
-        print(f"Mode '{mode}' not yet implemented. Falling back to static.")
+        print(f"Mode '{mode}' not recognized. Falling back to static.")
         output_signals, all_rirs = simulate_static_environment_numpy(config)
         
     # 6. Export Audio

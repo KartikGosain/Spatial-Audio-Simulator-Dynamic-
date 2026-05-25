@@ -57,7 +57,8 @@ class ConfigManager:
                 'custom_target_azim': target_info.get('azim', 0),
                 'custom_target_elev': target_info.get('elev', 0),
                 'radius': src.get('radius', 0.0),
-                'num_points': src.get('num_points', 1)
+                'num_points': src.get('num_points', 1),
+                'trajectory': src.get('trajectory', {}) # New trajectory object
             }
             if 'cloud' in src:
                 spk['cloud'] = src['cloud']

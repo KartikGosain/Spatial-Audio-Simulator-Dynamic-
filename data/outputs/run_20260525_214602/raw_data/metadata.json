@@ -1,0 +1,29 @@
+{
+    "room_dim": [
+        10.0,
+        10.0,
+        4.0
+    ],
+    "fs": 16000,
+    "absorption": {
+        "north": 0.4,
+        "south": 0.4,
+        "east": 0.4,
+        "west": 0.4,
+        "floor": 0.2,
+        "ceiling": 0.8
+    },
+    "mic_positions": [
+        [
+            4.9,
+            4.0,
+            1.5
+        ],
+        [
+            5.1,
+            4.0,
+            1.5
+        ]
+    ],
+    "num_sources": 2
+}
